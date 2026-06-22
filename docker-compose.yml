@@ -1,0 +1,50 @@
+version: "3.8"
+
+services:
+  mcp-server:
+    build: .
+    container_name: torbox-mcp
+    restart: unless-stopped
+    environment:
+      - PROWLARR_URL=${PROWLARR_URL:-http://prowlarr:9696}
+      - PROWLARR_API_KEY=${PROWLARR_API_KEY}
+      - TORBOX_API_KEY=${TORBOX_API_KEY}
+    networks:
+      - torbox-net
+    # Exposing the port is optional if the agent connects directly via docker exec or if we run it as a stdio server, 
+    # but for SSE/HTTP we can expose it. We'll use stdio for standard MCP, but if FastMCP uses SSE, we map port 8000.
+    ports:
+      - "8000:8000"
+
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+    volumes:
+      - ./data/prowlarr:/config
+    ports:
+      - "9696:9696"
+    restart: unless-stopped
+    networks:
+      - torbox-net
+
+  flaresolverr:
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    container_name: flaresolverr
+    environment:
+      - LOG_LEVEL=info
+      - LOG_HTML=false
+      - CAPTCHA_SOLVER=none
+      - TZ=Etc/UTC
+    ports:
+      - "8191:8191"
+    restart: unless-stopped
+    networks:
+      - torbox-net
+
+networks:
+  torbox-net:
+    driver: bridge
