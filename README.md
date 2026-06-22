@@ -1,8 +1,10 @@
 # TorBox MCP Server
 
-![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
-![Framework](https://img.shields.io/badge/Framework-FastMCP-green)
-![License](https://img.shields.io/badge/License-MIT-lightgrey)
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3.10%2B-blue" alt="Python">
+  <img src="https://img.shields.io/badge/Framework-FastMCP-green" alt="Framework">
+  <img src="https://img.shields.io/badge/License-MIT-lightgrey" alt="License">
+</p>
 
 A robust Model Context Protocol (MCP) server that connects your AI agents to Prowlarr and TorBox, allowing for fully autonomous torrent searching, downloading, and media extraction.
 
