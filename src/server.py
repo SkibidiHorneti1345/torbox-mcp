@@ -108,4 +108,4 @@ async def get_secure_link(torrent_id: str, file_id: str) -> str:
 
 if __name__ == "__main__":
     # Start the FastMCP SSE server
-    mcp.run(transport="sse", host="0.0.0.0", port=8000)
+    mcp.run(transport="sse")
