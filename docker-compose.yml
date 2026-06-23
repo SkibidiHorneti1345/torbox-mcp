@@ -6,7 +6,7 @@ services:
     container_name: torbox-mcp
     restart: unless-stopped
     environment:
-      - PROWLARR_URL=${PROWLARR_URL:-http://prowlarr:9696}
+      - PROWLARR_URL=http://prowlarr:9696
       - PROWLARR_API_KEY=${PROWLARR_API_KEY}
       - TORBOX_API_KEY=${TORBOX_API_KEY}
     networks:

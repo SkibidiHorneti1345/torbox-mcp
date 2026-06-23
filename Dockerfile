@@ -11,4 +11,4 @@ COPY src/ ./src/
 
 # Run the FastMCP server using stdio by default, but it can be changed.
 # For FastMCP using the `mcp` CLI:
-ENTRYPOINT ["mcp", "run", "src/server.py"]
+ENTRYPOINT ["python", "src/server.py"]
