@@ -46,6 +46,16 @@ A robust Model Context Protocol (MCP) server that connects your AI agents to Pro
    python src/server.py
    ```
 
+   The SSE endpoint is `http://localhost:8000/sse`. The server binds to
+   `0.0.0.0:8000` by default so that it remains reachable through Docker port
+   publishing. `MCP_HOST` and `MCP_PORT` may be used to override the bind
+   address for non-Docker deployments.
+
+   To run the complete stack in Docker:
+   ```bash
+   docker compose up --build -d
+   ```
+
 ## Usage
 
 The server exposes tools to your AI agent natively over MCP:
