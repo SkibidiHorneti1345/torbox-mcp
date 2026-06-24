@@ -4,13 +4,13 @@ services:
     container_name: torbox-mcp
     restart: unless-stopped
     environment:
+      - MCP_HOST=0.0.0.0
+      - MCP_PORT=8000
       - PROWLARR_URL=http://prowlarr:9696
       - PROWLARR_API_KEY=${PROWLARR_API_KEY}
       - TORBOX_API_KEY=${TORBOX_API_KEY}
     networks:
       - torbox-net
-    # Exposing the port is optional if the agent connects directly via docker exec or if we run it as a stdio server, 
-    # but for SSE/HTTP we can expose it. We'll use stdio for standard MCP, but if FastMCP uses SSE, we map port 8000.
     ports:
       - "8000:8000"
 

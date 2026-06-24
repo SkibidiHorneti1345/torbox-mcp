@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import os
 from typing import Literal
 from mcp.server.fastmcp import FastMCP
 from dotenv import load_dotenv
@@ -14,7 +15,13 @@ from guardrails import validate_file_tree
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-mcp = FastMCP("TorBox AI Gateway", host="0.0.0.0", port=8000)
+# FastMCP defaults to 127.0.0.1. That is safe for local development, but makes
+# the server unreachable through a Docker port mapping. Keep the container-safe
+# defaults here and expose environment overrides for non-Docker deployments.
+MCP_HOST = os.environ.get("MCP_HOST", "0.0.0.0")
+MCP_PORT = int(os.environ.get("MCP_PORT", "8000"))
+
+mcp = FastMCP("TorBox AI Gateway", host=MCP_HOST, port=MCP_PORT)
 
 @mcp.tool()
 async def search_indexers(query: str, intent: Literal["media", "software"]) -> list[dict]:
@@ -108,4 +115,5 @@ async def get_secure_link(torrent_id: str, file_id: str) -> str:
 
 if __name__ == "__main__":
     # Start the FastMCP SSE server
+    logger.info("Starting TorBox MCP SSE server on http://%s:%s/sse", MCP_HOST, MCP_PORT)
     mcp.run(transport="sse")
