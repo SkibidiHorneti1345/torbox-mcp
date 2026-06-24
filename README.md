@@ -61,6 +61,10 @@ A robust Model Context Protocol (MCP) server that connects your AI agents to Pro
    `localhost` value in the local `.env` example is only for running the MCP
    server directly on the host.
 
+   Prowlarr indexers protected by Cloudflare can take longer than a typical
+   HTTP request. Searches wait up to 120 seconds by default; set
+   `PROWLARR_SEARCH_TIMEOUT` to change that limit.
+
 ## Usage
 
 The server exposes tools to your AI agent natively over MCP:

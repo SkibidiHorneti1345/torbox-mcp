@@ -1,6 +1,7 @@
 import os
 import httpx
 import logging
+import time
 from typing import Optional, List, Dict, Any
 
 logger = logging.getLogger(__name__)
@@ -8,6 +9,7 @@ logger = logging.getLogger(__name__)
 # Prowlarr API configuration
 PROWLARR_URL = os.environ.get("PROWLARR_URL", "http://localhost:9696").rstrip("/")
 PROWLARR_API_KEY = os.environ.get("PROWLARR_API_KEY", "")
+PROWLARR_SEARCH_TIMEOUT = float(os.environ.get("PROWLARR_SEARCH_TIMEOUT", "120"))
 
 # We will use /api/v1/search as it is the standard for Prowlarr.
 # (Note: Radarr/Sonarr use v3, Prowlarr uses v1)
@@ -33,7 +35,9 @@ async def search_indexers(query: str, intent: str) -> List[Dict[str, Any]]:
     # Basic search parameters
     params = {
         "query": query,
-        "type": "search"
+        "type": "search",
+        "limit": 10,
+        "offset": 0,
     }
 
     # Category mappings (simplified example, usually Prowlarr uses Torznab category IDs)
@@ -43,14 +47,41 @@ async def search_indexers(query: str, intent: str) -> List[Dict[str, Any]]:
     elif intent == "media":
         params["categories"] = [2000, 5000]
 
-    async with httpx.AsyncClient() as client:
+    started_at = time.monotonic()
+    timeout = httpx.Timeout(PROWLARR_SEARCH_TIMEOUT, connect=10.0)
+
+    async with httpx.AsyncClient(timeout=timeout) as client:
         try:
-            response = await client.get(SEARCH_ENDPOINT, headers=headers, params=params, timeout=15.0)
+            response = await client.get(SEARCH_ENDPOINT, headers=headers, params=params)
             response.raise_for_status()
             results = response.json()
+        except httpx.TimeoutException as e:
+            message = (
+                f"Prowlarr search timed out after {PROWLARR_SEARCH_TIMEOUT:g} seconds "
+                f"while waiting for its configured indexers."
+            )
+            logger.error("%s Endpoint: %s", message, SEARCH_ENDPOINT)
+            raise RuntimeError(message) from e
+        except httpx.HTTPStatusError as e:
+            message = f"Prowlarr returned HTTP {e.response.status_code} for the search request."
+            logger.error("%s Endpoint: %s", message, SEARCH_ENDPOINT)
+            raise RuntimeError(message) from e
+        except httpx.RequestError as e:
+            detail = str(e).strip() or type(e).__name__
+            message = f"Could not connect to Prowlarr: {detail}."
+            logger.error("%s Endpoint: %s", message, SEARCH_ENDPOINT)
+            raise RuntimeError(message) from e
         except Exception as e:
-            logger.error("Failed to query Prowlarr at %s: %r", SEARCH_ENDPOINT, e)
-            raise
+            detail = str(e).strip() or type(e).__name__
+            message = f"Prowlarr search failed: {detail}."
+            logger.exception("%s Endpoint: %s", message, SEARCH_ENDPOINT)
+            raise RuntimeError(message) from e
+
+    logger.info(
+        "Prowlarr returned %d results in %.1f seconds",
+        len(results),
+        time.monotonic() - started_at,
+    )
 
     # Filter and rank results
     valid_results = []

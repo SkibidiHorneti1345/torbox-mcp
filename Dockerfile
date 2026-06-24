@@ -6,7 +6,8 @@ WORKDIR /app
 # traffic forwarded through Docker's published port.
 ENV MCP_HOST=0.0.0.0 \
     MCP_PORT=8000 \
-    PROWLARR_URL=http://prowlarr:9696
+    PROWLARR_URL=http://prowlarr:9696 \
+    PROWLARR_SEARCH_TIMEOUT=120
 
 # Copy requirements and install
 COPY requirements.txt .
