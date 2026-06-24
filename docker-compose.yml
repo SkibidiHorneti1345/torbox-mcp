@@ -11,6 +11,8 @@ services:
       - TORBOX_API_KEY=${TORBOX_API_KEY}
     networks:
       - torbox-net
+    depends_on:
+      - prowlarr
     ports:
       - "8000:8000"
 

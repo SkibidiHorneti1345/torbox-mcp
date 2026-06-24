@@ -56,6 +56,11 @@ A robust Model Context Protocol (MCP) server that connects your AI agents to Pro
    docker compose up --build -d
    ```
 
+   In Docker, Prowlarr is reached by its Compose service name at
+   `http://prowlarr:9696`; do not use `localhost` for this connection. The
+   `localhost` value in the local `.env` example is only for running the MCP
+   server directly on the host.
+
 ## Usage
 
 The server exposes tools to your AI agent natively over MCP:

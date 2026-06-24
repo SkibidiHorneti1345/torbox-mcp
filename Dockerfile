@@ -5,7 +5,8 @@ WORKDIR /app
 # FastMCP otherwise defaults to the loopback interface, which cannot receive
 # traffic forwarded through Docker's published port.
 ENV MCP_HOST=0.0.0.0 \
-    MCP_PORT=8000
+    MCP_PORT=8000 \
+    PROWLARR_URL=http://prowlarr:9696
 
 # Copy requirements and install
 COPY requirements.txt .

@@ -23,6 +23,8 @@ async def search_indexers(query: str, intent: str) -> List[Dict[str, Any]]:
         logger.error("PROWLARR_API_KEY is not set.")
         raise ValueError("PROWLARR_API_KEY is not configured.")
 
+    logger.info("Querying Prowlarr at %s", SEARCH_ENDPOINT)
+
     headers = {
         "X-Api-Key": PROWLARR_API_KEY,
         "Accept": "application/json"
@@ -47,7 +49,7 @@ async def search_indexers(query: str, intent: str) -> List[Dict[str, Any]]:
             response.raise_for_status()
             results = response.json()
         except Exception as e:
-            logger.error(f"Failed to query Prowlarr: {e}")
+            logger.error("Failed to query Prowlarr at %s: %r", SEARCH_ENDPOINT, e)
             raise
 
     # Filter and rank results
