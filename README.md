@@ -65,6 +65,19 @@ A robust Model Context Protocol (MCP) server that connects your AI agents to Pro
    HTTP request. Searches wait up to 120 seconds by default; set
    `PROWLARR_SEARCH_TIMEOUT` to change that limit.
 
+   The Docker defaults cap in-flight work to prevent slow external services
+   from piling up inside the MCP process:
+   ```env
+   MAX_CONCURRENT_PROWLARR_SEARCHES=5
+   MAX_CONCURRENT_TORBOX_OPS=3
+   METADATA_MAX_RETRIES=30
+   METADATA_RETRY_DELAY=5
+   ```
+
+   Torrent files downloaded from Prowlarr are accepted without a size cap. To
+   reduce peak memory use, the server spools larger `.torrent` payloads to the
+   container temp directory before uploading them to TorBox.
+
 ## Usage
 
 The server exposes tools to your AI agent natively over MCP:

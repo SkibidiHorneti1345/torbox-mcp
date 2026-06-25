@@ -8,12 +8,18 @@ services:
       - MCP_PORT=8000
       - PROWLARR_URL=http://prowlarr:9696
       - PROWLARR_SEARCH_TIMEOUT=120
+      - MAX_CONCURRENT_PROWLARR_SEARCHES=5
+      - MAX_CONCURRENT_TORBOX_OPS=3
+      - METADATA_MAX_RETRIES=30
+      - METADATA_RETRY_DELAY=5
       - PROWLARR_API_KEY=${PROWLARR_API_KEY}
       - TORBOX_API_KEY=${TORBOX_API_KEY}
     networks:
       - torbox-net
     depends_on:
       - prowlarr
+    mem_limit: 512m
+    pids_limit: 128
     ports:
       - "8000:8000"
 
